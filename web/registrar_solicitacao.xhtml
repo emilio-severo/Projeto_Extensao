@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Projeto de extensão</title>
+        <meta name="if-sul" content="projeto"></meta>
+        <h:outputStylesheet library="css" name="registarSolicitacao.css" />
+        <script src="resources/javascript/scripts.js" type="text/javascript"></script>
+        <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyCDeDTdxDcvnRufBvILmxZUgD3U947b9t4" async="" defer="defer" type="text/javascript"></script>
+        <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+    </h:head>
+    <h:body style="background-image: url('resources/imagens/bage_aerea.jpg'); background-size: 100% 100%;background-attachment: fixed;background-position: center;background-repeat: no-repeat;">
+        <ui:include src="header.xhtml"/>
+        <h1 id="titulo">Prefeitura municipal de Bagé a serviço da população</h1>
+        <b:container id="container">
+            <b:form id="formularios" horizontal="true">
+                <b:container class="form_servico" style="width: 90%;">
+                    <h3 class="subtitulo">Descrição do servico</h3>
+                    <h:outputText value="Adicionar foto" style="margin-top: 10px;color: chocolate;float: left;position: relative;font-size: 16px;margin-left: 3%"/>
+                    <p:fileUpload class="file_upload" fileUploadListener="#{registrarSolicitacaoMB.upload}" fileLimit="1" fileLimitMessage="Excedido Limite de arquivos"
+                                  cancelLabel="Cancelar" label="Escolher foto" uploadLabel="Anexar" 
+                                  invalidFileMessage="Somente arquivos .jpg, .png ou .gif"
+                                  allowTypes="/(\.|\/)(gif|jpe?g|png)$/" value="#{registrarSolicitacaoMB.file}"
+                                  mode="advanced" skinSimple="true" />
+                    <b:inputTextarea class="input_descricao" label-style="text-align : right;margin-top: 10px;color: chocolate;min-width: 100px" style="margin: auto;height: 180px;margin-bottom: 5%" 
+                                     value="#{registarSolicitacaoMB.protocolo.descricao}" label-small-screen="2" small-screen="9" label="Descrição" tooltip="descrição do serviço"/>
+
+                    <p:growl id="messages" showDetail="true" />
+                    <h:outputText value="Adicionar localização" style="width: 100%;color: chocolate;font-size: 16px;margin: 40% 0 1% 1%"/>
+                    <p:gmap id="gmap" center="-31.334046274414,-54.10234451293945" zoom="15" type="HYBRID" style="width:92%;min-width: 400px;height:300px;margin: 3% 0 6% 4%"
+                            model="#{registarSolicitacaoMB.mapa}" onPointClick="handlePointClick(event);" widgetVar="map">
+                        <p:ajax event="markerDrag" listener="#{registarSolicitacaoMB.onMarkerDrag(event)}"/>
+                    </p:gmap>
+                </b:container>
+                <b:container class="form_informacoes_pessoais" style="width: 90%">
+                    <h3 class="subtitulo">Minhas informações</h3>
+                    <b:inputText label-style="text-align : right;color: chocolate;margin-top:1%" class="form_informacoes_input" label-small-screen="2" small-screen="9"  
+                                 label="Email" value="#{registarSolicitacaoMB.requerente.email}" tooltip="email"/>
+                    <b:inputText label-style="text-align : right;color: chocolate;margin-top:1%" class="form_informacoes_input" label-small-screen="2" small-screen="9"  
+                                 label="Nome" value="#{registarSolicitacaoMB.requerente.nome}" tooltip="nome"/>
+                    <b:inputText label-style="text-align : right;color: chocolate;margin-top:1%" class="form_informacoes_input" label-small-screen="2" small-screen="9"  
+                                 label="Celular" value="#{registarSolicitacaoMB.requerente.celular}" tooltip="celular"/>
+                    <b:dateTimePicker label-style="text-align : right;color: chocolate;margin:1% 0 5% 0" class="form_informacoes_input" label-small-screen="2" small-screen="9"
+                                      label="Data de nascimento" value="#{registarSolicitacaoMB.requerente.dataNasc}" tooltip="data de nascimento" mode="toggle-icon" show-time="false"/>
+                </b:container>
+
+                <a href="#" id="continuar" onclick="carregarPreVisualizacao()">
+                    <p id="botao_continuar">continuar</p>
+                </a>
+                <!--b:button value="Continuar" style="width: 70%;height: 50px;margin: 30px 0 40px 15%;background-color: blue;color: white"/-->
+                <div id="confirmacao" onload="carregarPreVisualizacao()">
+                    <h:outputText value="nome : #{registarSolicitacaoMB.requerente.nome}"/><br/>
+                    <h:outputText value="local : "/><br/>
+                    <h:outputText value="descrição : "/><br/>
+                    <b:commandButton id="botao_confirmar" value="Continuar" style="width: 70%;float: bottom;position: relative;height: 50px;margin: 0 0 0 15%;background-color: blue;color: white" action="#{registarSolicitacaoMB.concluir()}"/>
+                </div>
+            </b:form>
+        </b:container>
+        <p:dialog widgetVar="dlg" showEffect="fade">
+            <h:form prependId="false">
+                <h:panelGrid columns="2">
+                    <h:outputLabel for="title" value="Title:"/>
+                    <p:inputText id="title" value="#{registarSolicitacaoMB.localizacao.titulo}"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Cancel" onclick="return cancel()"/>
+                    </f:facet>
+                </h:panelGrid>
+                <h:inputHidden id="lat" value="#{registarSolicitacaoMB.localizacao.latitude}"/>
+                <h:inputHidden id="lng" value="#{registarSolicitacaoMB.localizacao.longitude}"/>
+            </h:form>
+        </p:dialog>
+    </h:body>
+</html>
+
+

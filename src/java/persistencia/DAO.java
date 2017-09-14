@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.Query; 
 
 public class DAO<T>{
 

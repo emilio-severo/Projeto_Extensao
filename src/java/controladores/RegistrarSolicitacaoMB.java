@@ -23,7 +23,7 @@ import persistencia.DAO;
 @SessionScoped
 public class RegistrarSolicitacaoMB implements Serializable {
 
-    Requerente requerente;
+    Requerente requerente; 
     Protocolo protocolo;
     Localizacao localizacao;
     

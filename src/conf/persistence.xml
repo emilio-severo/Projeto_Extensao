@@ -3,6 +3,6 @@
   <persistence-unit name="Projeto-ExtensaoPU" transaction-type="JTA">
     <jta-data-source>java:app/projetoExtensao</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties/>
+    <properties/> 
   </persistence-unit>
 </persistence>
